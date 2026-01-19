@@ -24,7 +24,7 @@ const formSchema = z.object({
     }),
 });
 
-import { useVerifyEmailOTP } from "@coinbase/cdp-react";
+import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
 import { toast } from "sonner";
 
 export default function OTPForm() {
