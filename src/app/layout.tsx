@@ -8,6 +8,7 @@ import "@fontsource/outfit/500.css";
 import "@fontsource/outfit/600.css";
 import "@fontsource/outfit/700.css";
 import "./globals.css";
+import { CDPProvider } from "@/components/providers/CDPProvider";
 
 export const metadata: Metadata = {
   title: "CryptoCore Wallet",
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased font-sans bg-background text-foreground selection:bg-primary/30">
-        {children}
+        <CDPProvider>
+          {children}
+        </CDPProvider>
       </body>
     </html>
   );
