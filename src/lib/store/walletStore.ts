@@ -16,9 +16,12 @@ interface WalletStore {
     user: User | null;
     wallet: WalletData | null;
     isLoading: boolean;
+    flowId: string | null;
 
-    login: (email: string) => Promise<void>;
-    verifyOTP: (code: string) => Promise<void>;
+    login: (email: string) => Promise<void>; // Deprecated in favor of hook
+    verifyOTP: (code: string) => Promise<void>; // Deprecated
+    setFlowId: (id: string) => void;
+    syncAuth: (isAuthenticated: boolean, user: any) => void;
     logout: () => void;
     setNetwork: (network: 'base' | 'ethereum') => void;
 }
@@ -28,6 +31,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
     user: null,
     wallet: null,
     isLoading: false,
+    flowId: null,
 
     login: async (email: string) => {
         set({ isLoading: true });
@@ -40,24 +44,19 @@ export const useWalletStore = create<WalletStore>((set) => ({
     },
 
     verifyOTP: async (code: string) => {
-        set({ isLoading: true });
-        // Simulate API call and wallet generation
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Implementation will be handled by component using CDP hooks
+        // This is kept for legacy or local state sync if needed
+    },
 
-        set({
-            isLoading: false,
-            isAuthenticated: true,
-            user: { id: 'user_123', email: 'user@example.com' },
-            wallet: {
-                address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', // Mock address
-                balance: '1.45', // Mock ETH balance
-                network: 'base'
-            }
-        });
+    setFlowId: (id: string) => set({ flowId: id }),
+
+    // Sync CDP state
+    syncAuth: (isAuthenticated: boolean, user: any) => {
+        set({ isAuthenticated, user });
     },
 
     logout: () => {
-        set({ isAuthenticated: false, user: null, wallet: null });
+        set({ isAuthenticated: false, user: null, wallet: null, flowId: null });
     },
 
     setNetwork: (network) => {
