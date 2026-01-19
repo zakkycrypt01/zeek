@@ -21,7 +21,6 @@ interface WalletStore {
     verifyOTP: (code: string) => Promise<void>;
     logout: () => void;
     setNetwork: (network: 'base' | 'ethereum') => void;
-    setWallet: (wallet: WalletData | null) => void;
 }
 
 export const useWalletStore = create<WalletStore>((set) => ({
@@ -29,12 +28,6 @@ export const useWalletStore = create<WalletStore>((set) => ({
     user: null,
     wallet: null,
     isLoading: false,
-
-    setWallet: (wallet) => set({
-        wallet,
-        isAuthenticated: !!wallet,
-        user: wallet ? { id: 'wallet-user', email: 'connected-via-wallet' } : null
-    }),
 
     login: async (email: string) => {
         set({ isLoading: true });
