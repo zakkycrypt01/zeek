@@ -37,7 +37,7 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="flex flex-col h-full py-6 px-4">
+        <div className="flex flex-col h-full py-6 px-4 glass-panel border-r-0 rounded-r-2xl my-2 ml-2">
             {/* Brand */}
             <div className="flex items-center gap-3 px-2 mb-10">
                 <div className="bg-primary/20 p-2 rounded-lg border border-primary/20">
