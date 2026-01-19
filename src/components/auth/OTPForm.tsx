@@ -24,6 +24,9 @@ const formSchema = z.object({
     }),
 });
 
+import { useVerifyEmailOTP } from "@coinbase/cdp-react";
+import { toast } from "sonner";
+
 export default function OTPForm() {
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -36,13 +39,39 @@ export default function OTPForm() {
         },
     });
 
-    const { verifyOTP } = useWalletStore();
+    const { flowId, syncAuth } = useWalletStore();
+    const { verifyEmailOTP } = useVerifyEmailOTP();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!flowId) {
+            toast.error("Session expired. Please start over.");
+            router.push("/login");
+            return;
+        }
+
         setIsLoading(true);
-        await verifyOTP(values.code);
-        router.push("/wallet");
+        try {
+            // 1. Verify OTP with CDP SDK
+            const response = await verifyEmailOTP({ flowId, otp: values.code });
+            const user = response?.user;
+
+            if (user) {
+                // 2. Sync state (mocking wallet data for now as SDK might not return full wallet details immediately in this object structure, strictly following quickstart return)
+                // In a real app, we'd fetch the wallet address from the user object or a subsequent call
+                syncAuth(true, { id: user.id || 'cdp_user', email: 'verified@user.com' });
+
+                toast.success("Successfully verified!");
+                router.push("/wallet");
+            } else {
+                throw new Error("Verification failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Invalid code. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
