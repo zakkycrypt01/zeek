@@ -59,7 +59,7 @@ export default function OTPForm() {
             if (user) {
                 // 2. Sync state (mocking wallet data for now as SDK might not return full wallet details immediately in this object structure, strictly following quickstart return)
                 // In a real app, we'd fetch the wallet address from the user object or a subsequent call
-                syncAuth(true, { id: user.id || 'cdp_user', email: 'verified@user.com' });
+                syncAuth(true, { id: (user as any).id || 'cdp_user', email: 'verified@user.com' });
 
                 toast.success("Successfully verified!");
                 router.push("/wallet");
