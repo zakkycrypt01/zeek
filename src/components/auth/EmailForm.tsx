@@ -25,7 +25,7 @@ const formSchema = z.object({
     }),
 });
 
-import { useSignInWithEmail } from "@coinbase/cdp-react";
+import { useSignInWithEmail } from "@coinbase/cdp-hooks";
 import { toast } from "sonner";
 
 export default function EmailForm() {
