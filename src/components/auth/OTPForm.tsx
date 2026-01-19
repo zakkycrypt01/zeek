@@ -1,0 +1,90 @@
+"use client";
+
+import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Loader2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useWalletStore } from "@/lib/store/walletStore";
+import { useRouter } from "next/navigation";
+
+const formSchema = z.object({
+    code: z.string().length(6, {
+        message: "Verification code must be 6 digits.",
+    }),
+});
+
+export default function OTPForm() {
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    // Auto-focus refs could be added here for polish
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            code: "",
+        },
+    });
+
+    const { verifyOTP } = useWalletStore();
+    const router = useRouter();
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        setIsLoading(true);
+        await verifyOTP(values.code);
+        router.push("/wallet");
+    }
+
+    return (
+        <div className="grid gap-6">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="code"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            maxLength={6}
+                                            className="text-center text-3xl font-mono tracking-[1em] h-16 bg-white/5 border-white/10 focus:border-primary/50 text-white rounded-xl"
+                                            placeholder="000000"
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button
+                        type="submit"
+                        className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-lg shadow-primary/25 rounded-xl transition-all duration-300 transform hover:scale-[1.02]"
+                        disabled={isLoading}
+                    >
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Verify Access
+                    </Button>
+                </form>
+            </Form>
+
+            <div className="text-center">
+                <Button variant="link" className="text-sm text-muted-foreground hover:text-white">
+                    Resend Code
+                </Button>
+            </div>
+        </div>
+    );
+}
