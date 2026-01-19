@@ -25,8 +25,12 @@ const formSchema = z.object({
     }),
 });
 
+import { useSignInWithEmail } from "@coinbase/cdp-react";
+import { toast } from "sonner";
+
 export default function EmailForm() {
     const [isLoading, setIsLoading] = React.useState(false);
+    const { signInWithEmail } = useSignInWithEmail();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -35,13 +39,26 @@ export default function EmailForm() {
         },
     });
 
-    const { login } = useWalletStore();
+    const { setFlowId } = useWalletStore();
     const router = useRouter();
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
-        await login(values.email);
-        router.push("/verify");
+        try {
+            // 1. Call CDP SDK to start email auth
+            const { flowId } = await signInWithEmail({ email: values.email });
+
+            // 2. Save flowId to store for the next step
+            setFlowId(flowId);
+
+            toast.success("Verification code sent!");
+            router.push("/verify");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to send verification code. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
