@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@coinbase/cdp-core": "^0.0.76",
+    "@coinbase/cdp-hooks": "^0.0.76",
+    "@coinbase/cdp-react": "^0.0.76",
     "@coinbase/onchainkit": "^1.1.2",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/outfit": "^5.2.8",
